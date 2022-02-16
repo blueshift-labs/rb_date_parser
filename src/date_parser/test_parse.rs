@@ -548,16 +548,16 @@ assert_eq!(date_parse("'99/5/2",true),DateTime{year: Some(1999), mon: Some(5), m
 }
 
 
-fn get_time_values(dt: DateTime) -> (Option<u64>, Option<u64>, Option<u64>, Option<f64>) {
+fn get_time_values(dt: DateTime) -> (Option<u32>, Option<u32>, Option<u32>, Option<f64>) {
     (dt.hour, dt.min, dt.sec, dt.sec_fraction)
 }
-fn get_date_values(dt: DateTime) -> (Option<i64>, Option<u64>, Option<u64>) {
+fn get_date_values(dt: DateTime) -> (Option<i32>, Option<u32>, Option<u32>) {
     (dt.year, dt.mon, dt.mday)
 }
-fn get_cw_values(dt: DateTime) -> (Option<i64>, Option<u64>, Option<u64>) {
+fn get_cw_values(dt: DateTime) -> (Option<i32>, Option<u32>, Option<u32>) {
     (dt.cwyear, dt.cweek, dt.cwday)
 }
-fn get_yday_values(dt: DateTime) -> (Option<i64>, Option<i64>) {
+fn get_yday_values(dt: DateTime) -> (Option<i32>, Option<i32>) {
     (dt.year, dt.yday)
 }
 

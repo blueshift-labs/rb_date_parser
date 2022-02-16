@@ -1,7 +1,7 @@
 use phf::phf_map;
 
 // Adapted from the ruby zonetab.list. Removed the '.'s
-static TIMEZONE_OFFSETS: phf::Map<&'static str, i64> = phf_map! {
+static TIMEZONE_OFFSETS: phf::Map<&'static str, i32> = phf_map! {
     "ut" =>   0*3600,
     "gmt" =>  0*3600,
     "est" => -5*3600,
@@ -322,7 +322,7 @@ static TIMEZONE_OFFSETS: phf::Map<&'static str, i64> = phf_map! {
 
 
 
-pub fn zone_offset(zone: &str) -> Option<i64> {
+pub fn zone_offset(zone: &str) -> Option<i32> {
     let cleaned = zone.to_lowercase().trim().replace('.', "");
     TIMEZONE_OFFSETS.get(&cleaned).copied()
 }
