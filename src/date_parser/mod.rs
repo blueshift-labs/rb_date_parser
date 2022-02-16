@@ -1,5 +1,7 @@
 mod parse;
 mod zonetab;
+
+#[cfg(test)]
 mod test_parse;
 
 pub use parse::DateTime;
