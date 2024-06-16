@@ -1,26 +1,7 @@
 use phf::phf_map;
 use regex::{Regex, Captures, RegexBuilder};
-use serde::{Serialize};
 
-#[derive(Debug, Default, Serialize, std::cmp::PartialEq)]
-pub struct DateTime {
-    pub hour: Option<u32>,
-    pub min: Option<u32>,
-    pub sec: Option<u32>,
-    pub sec_fraction: Option<f64>,
-    pub year: Option<i32>,
-    pub mon: Option<u32>,
-    pub mday: Option<u32>,
-    pub yday: Option<i32>,
-    pub wday: Option<i32>,
-    pub cwyear: Option<i32>,
-    pub cweek: Option<u32>,
-    pub cwday: Option<u32>,
-    pub offset: Option<i32>,
-    pub zone: Option<String>,
-    pub bc: bool,
-    pub comp: Option<bool>,
-}
+use crate::DateTime;
 
 const SPACE: &str = " ";
 const HAVE_ALPHA: u32 = 1<<0;
@@ -97,7 +78,7 @@ fn day_num(date: &str) -> i32 {
 }
 
 fn months_num(date: &str) -> &'static str {
-    *MONTHS_HASH.get(&date.to_lowercase()).unwrap_or(&"01")
+    MONTHS_HASH.get(&date.to_lowercase()).unwrap_or(&"01")
 }
 
 fn slice_number_part(string: &str) -> (&str, &str, &str) {
@@ -564,7 +545,7 @@ fn parse_jis(string: &mut String, datetime: &mut DateTime) -> bool {
         let ep = caps.get(1)
                                 .map(|x| x.as_str())
                                 .and_then(|x| x.chars().next())
-                                    .map(|x| gengo(x))
+                                    .map(gengo)
                                 .unwrap_or_default();
 
         if let Some(x) = caps.get(2)
@@ -764,69 +745,69 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
             2 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                 } else if let Some(num) = digits_str_to_int(s2, 0, 2) {
-                    datetime.mday = Some(num as u32);
+                    datetime.mday = Some(num);
                 }
             },
             4 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-4, 2) {
-                        datetime.min = Some(num as u32);
+                        datetime.min = Some(num);
                     }
                 } else {
                     if let Some(num) = digits_str_to_int(s2, 0, 2) {
-                        datetime.mon = Some(num as u32);
+                        datetime.mon = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, 2, 2) {
-                        datetime.mday = Some(num as u32);
+                        datetime.mday = Some(num);
                     }
                 }
             },
             6 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-4, 2) {
-                        datetime.min = Some(num as u32);
+                        datetime.min = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-6, 2) {
-                        datetime.hour = Some(num as u32);
+                        datetime.hour = Some(num);
                     }
                 } else {
                     if let Some(num) = digits_str_to_int(s2, 0, 2) {
                         datetime.year = Some(sign * (num as i32));
                     }
                     if let Some(num) = digits_str_to_int(s2, 2, 2) {
-                        datetime.mon = Some(num as u32);
+                        datetime.mon = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, 4, 2) {
-                        datetime.mday = Some(num as u32);
+                        datetime.mday = Some(num);
                     }
                 }
             },
             8 | 10 | 12 | 14 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-4, 2) {
-                        datetime.min = Some(num as u32);
+                        datetime.min = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-6, 2) {
-                        datetime.hour = Some(num as u32);
+                        datetime.hour = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-8, 2) {
-                        datetime.mday = Some(num as u32);
+                        datetime.mday = Some(num);
                     }
                     if l2 >= 10 {
                         if let Some(num) = digits_str_to_int(s2, l2-10, 2) {
-                            datetime.mon = Some(num as u32);
+                            datetime.mon = Some(num);
                         }
                     }
                     if l2 == 12 {
@@ -845,24 +826,24 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
                         datetime.year = Some(sign * (num as i32));
                     }
                     if let Some(num) = digits_str_to_int(s2, 4, 2) {
-                        datetime.mon = Some(num as u32);
+                        datetime.mon = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, 6, 2) {
-                        datetime.mday = Some(num as u32);
+                        datetime.mday = Some(num);
                     }
                     if l2 >= 10 {
                         if let Some(num) = digits_str_to_int(s2, 8, 2) {
-                            datetime.hour = Some(num as u32);
+                            datetime.hour = Some(num);
                         }
                     }
                     if l2 >= 12 {
                         if let Some(num) = digits_str_to_int(s2, 10, 2) {
-                            datetime.min = Some(num as u32);
+                            datetime.min = Some(num);
                         }
                     }
                     if l2 == 14 {
                         if let Some(num) = digits_str_to_int(s2, 12, 2) {
-                            datetime.sec = Some(num as u32);
+                            datetime.sec = Some(num);
                         }
                         datetime.comp = Some(false);
                     }
@@ -871,10 +852,10 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
             3 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-3, 1) {
-                        datetime.min = Some(num as u32);
+                        datetime.min = Some(num);
                     }
                 } else if let Some(num) = digits_str_to_int(s2, 0, 3) {
                     datetime.yday = Some(num as i32);
@@ -883,13 +864,13 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
             5 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-4, 2) {
-                        datetime.min = Some(num as u32);
+                        datetime.min = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-5, 1) {
-                        datetime.hour = Some(num as u32);
+                        datetime.hour = Some(num);
                     }
                 } else{
                     if let Some(num) = digits_str_to_int(s2, 0, 2) {
@@ -903,16 +884,16 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
             7 => {
                 if s3.is_none() && s4.is_some() {
                     if let Some(num) = digits_str_to_int(s2, l2-2, 2) {
-                        datetime.sec = Some(num as u32);
+                        datetime.sec = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-4, 2) {
-                        datetime.min = Some(num as u32);
+                        datetime.min = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-6, 2) {
-                        datetime.hour = Some(num as u32);
+                        datetime.hour = Some(num);
                     }
                     if let Some(num) = digits_str_to_int(s2, l2-7, 1) {
-                        datetime.mday = Some(num as u32);
+                        datetime.mday = Some(num);
                     }
                 } else{
                     if let Some(num) = digits_str_to_int(s2, 0, 4) {
@@ -932,16 +913,16 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
                 match l3 {
                     2 | 4 | 6 => {
                         if let Some(num) = digits_str_to_int(s3, l3-2, 2) {
-                            datetime.sec = Some(num as u32);
+                            datetime.sec = Some(num);
                         }
                         if l3 >= 4 {
                             if let Some(num) = digits_str_to_int(s3, l3-4, 2) {
-                                datetime.min = Some(num as u32);
+                                datetime.min = Some(num);
                             }
                         }
                         if l3 >= 6 {
                             if let Some(num) = digits_str_to_int(s3, l3-6, 2) {
-                                datetime.hour = Some(num as u32);
+                                datetime.hour = Some(num);
                             }
                         }
                     },
@@ -952,16 +933,16 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
                 match l3 {
                     2 | 4 | 6 => {
                         if let Some(num) = digits_str_to_int(s3, 0, 2) {
-                            datetime.hour = Some(num as u32);
+                            datetime.hour = Some(num);
                         }
                         if l3 >= 4 {
                             if let Some(num) = digits_str_to_int(s3, 2, 2) {
-                                datetime.min = Some(num as u32);
+                                datetime.min = Some(num);
                             }
                         }
                         if l3 >= 6 {
                             if let Some(num) = digits_str_to_int(s3, 4, 2) {
-                                datetime.sec = Some(num as u32);
+                                datetime.sec = Some(num);
                             }
                         }
                     },
@@ -986,7 +967,7 @@ fn parse_ddd(string: &mut String, datetime: &mut DateTime) -> bool {
                 } else {
                     datetime.zone = Some(trimmed.to_owned());
                     if let Some(first_char) = trimmed.chars().next() {
-                        if ('0'..='9').contains(&first_char) {
+                        if first_char.is_ascii_digit() {
                             datetime.offset =date_zone_to_diff(&format!("+{}", trimmed));
                         } else {
                             datetime.offset = date_zone_to_diff(trimmed);
@@ -1311,10 +1292,10 @@ fn parse_frag(string: &mut String, datetime: &mut DateTime) -> bool {
         if let Some(n) = caps.get(1)
                 .map(|x| x.as_str())
                 .map(|x| x.parse::<i32>().unwrap()) {
-            if datetime.hour.is_some() && datetime.mday.is_none() && n >= 1 && n <= 31 {
+            if datetime.hour.is_some() && datetime.mday.is_none() && (1..=31).contains(&n) {
                 datetime.mday = Some(n as u32);
             }
-            if datetime.mday.is_some() && datetime.hour.is_none() && n >= 0 && n <= 24 {
+            if datetime.mday.is_some() && datetime.hour.is_none() && (0..=24).contains(&n) {
                 datetime.hour = Some(n as u32);
             }
         }

@@ -1,4 +1,4 @@
-use crate::date_parser::{date_parse, parse::DateTime};
+use crate::date_parser::{date_parse, DateTime};
 
 #[test]
 pub fn test_ctime_asctime() {
