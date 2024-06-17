@@ -576,7 +576,7 @@ fn make_time(
 }
 
 
-fn parse_internal(
+pub fn parse_with_custom_time_and_year(
     date: &str,
     now: Option<chrono::DateTime<FixedOffset>>,
     year_fn: Option<fn(i32) -> i32>
@@ -598,7 +598,7 @@ fn parse_internal(
 
 pub fn parse(date: &str,) -> crate::Result<DateTime<FixedOffset>>
 {
-    parse_internal(date, None, None)
+    parse_with_custom_time_and_year(date, None, None)
 }
 
 pub fn local(year: Option<i32>, month: Option<u32>, day: Option<u32>, hour: Option<u32>, min: Option<u32>, sec: Option<u32>, tz: Option<&str>) -> crate::Result<DateTime<FixedOffset>> {
@@ -698,22 +698,22 @@ mod test {
 
         assert_eq!(
             local_time!(           2001,11,29,21,12),
-            super::parse_internal("2001/11/29 21:12", Some(now), None).unwrap()
+            super::parse_with_custom_time_and_year("2001/11/29 21:12", Some(now), None).unwrap()
         );
         assert_eq!(
             local_time!(           2001,11,29),
-            super::parse_internal("2001/11/29", Some(now), None).unwrap()
+            super::parse_with_custom_time_and_year("2001/11/29", Some(now), None).unwrap()
         );
         assert_eq!(
             local_time!(            2001,11,29),
-            super::parse_internal(      "11/29", Some(now), None).unwrap()
+            super::parse_with_custom_time_and_year(      "11/29", Some(now), None).unwrap()
         );
         assert_eq!(
             local_time!( 2001,11,29, 10,22),
-            super::parse_internal(  "10:22", Some(now), None).unwrap()
+            super::parse_with_custom_time_and_year(  "10:22", Some(now), None).unwrap()
         );
         assert!(
-            super::parse_internal(  "foo", Some(now), None).is_err()
+            super::parse_with_custom_time_and_year(  "foo", Some(now), None).is_err()
         );
     }
 
@@ -721,7 +721,7 @@ mod test {
     fn test_completion_with_different_timezone() {
         let now_local: DateTime<FixedOffset> = local_time!(2001,2,3,0,0,0,"+09:00");
         let now = now_local.to_utc();
-        let t: DateTime<FixedOffset> = super::parse_internal("10:20:30 GMT", Some(now.fixed_offset()), None).unwrap();
+        let t: DateTime<FixedOffset> = super::parse_with_custom_time_and_year("10:20:30 GMT", Some(now.fixed_offset()), None).unwrap();
         assert_eq!(utc_time!(2001,2,2,10,20,30), t);
         assert_eq!(t, t.to_utc());
         assert_eq!(0, t.offset().local_minus_utc());

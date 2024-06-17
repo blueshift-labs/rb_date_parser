@@ -7,6 +7,7 @@ use thiserror::Error;
 use std::result;
 
 pub use date_parser::time::parse;
+pub use date_parser::time::parse_with_custom_time_and_year;
 
 /// Convenience type alias for parse errors
 pub type Result<T, E = ParseError> = result::Result<T, E>;
