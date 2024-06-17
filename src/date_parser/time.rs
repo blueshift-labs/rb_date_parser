@@ -417,7 +417,6 @@ fn force_zone(time: chrono::DateTime<chrono::FixedOffset>, zone: &str, offset: O
 
     if let Some(off) = offset {
         let time = to_local_time(time, None)?;
-        print!("off={} time.offset()={} local_minus_utc={}", off, time.offset(), time.offset().local_minus_utc());
 
         if time.offset().local_minus_utc() != off {
             return to_local_time(time, offset);
