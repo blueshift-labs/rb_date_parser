@@ -27,3 +27,14 @@ pub enum ParseError {
 }
 
 pub use date_parser::DateTime;
+
+pub fn get_current_timezone() -> chrono_tz::Tz {
+    lazy_static! {
+        static ref LOCAL_TZ: chrono_tz::Tz = {
+            let tz_str = iana_time_zone::get_timezone().expect("Error getting local timezone");
+            let tz: chrono_tz::Tz = tz_str.parse().expect("Error parsing local timezone");
+            tz
+        };
+    }
+    *LOCAL_TZ
+}
