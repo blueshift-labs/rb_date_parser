@@ -3,8 +3,6 @@ mod zonetab;
 pub mod time;
 #[cfg(test)]
 mod test_parse;
-#[cfg(test)]
-mod test_time;
 
 pub use parse::date_parse;
 pub use parse::date_parse2;

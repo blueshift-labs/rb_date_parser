@@ -508,9 +508,9 @@ fn make_time(
             now = Some(now_dt.with_timezone(local_offset));
         }
     }
-    let mut usec = None;
+    let mut nanosec = None;
     if let Some(frac) = sec_fraction {
-        usec = Some(frac * 1000000.0);
+        nanosec = Some(frac * 1_000_000_000.0);
     }
 
     if let Some(now_dt) = now {
@@ -543,7 +543,7 @@ fn make_time(
             if sec_fraction.is_some() {
                 break;
             }
-            usec = Some((now_dt.timestamp_nanos_opt().unwrap_or_default() as f64)/1000.0);
+            nanosec = Some(now_dt.timestamp_nanos_opt().unwrap_or_default() as f64);
         }
     }
     let year = year.unwrap_or(1970);
@@ -552,7 +552,7 @@ fn make_time(
     let hour = hour.unwrap_or(0);
     let min = min.unwrap_or(0);
     let sec = sec.unwrap_or(0);
-    let usec = usec.unwrap_or(0.0);
+    let nanosec = nanosec.unwrap_or(0.0);
 
     if Some(year) != off_year {
         off = None;
@@ -564,12 +564,12 @@ fn make_time(
         let (year, mon, mday, hour, min, sec) = apply_offset(year, mon.try_into().unwrap(), mday.try_into().unwrap(), hour.try_into().unwrap(), min.try_into().unwrap(), sec.try_into().unwrap(), off.unwrap());
         let (year, mon, mday) = validated_ymd(year, mon, mday)?;
         let (hour, min, sec) = validated_hms(hour, min, sec)?;
-        let dt: DateTime<FixedOffset> = chrono::Utc.ymd(year, mon, mday).and_hms_micro_opt(hour, min, sec, usec as u32).unwrap().fixed_offset();
+        let dt: DateTime<FixedOffset> = chrono::Utc.ymd(year, mon, mday).and_hms_nano_opt(hour, min, sec, nanosec as u32).unwrap().fixed_offset();
         force_zone(dt, zone.unwrap(), Some(offset))
     } else {
         let (year, mon, mday) = validated_ymd(year, mon as i32, mday as i32)?;
         let (hour, min, sec) = validated_hms(hour as i32, min as i32, sec as i32)?;
-        let dt = chrono::Local.ymd(year, mon, mday).and_hms_micro_opt(hour, min, sec, usec as u32).unwrap().fixed_offset();
+        let dt = chrono::Local.ymd(year, mon, mday).and_hms_nano_opt(hour, min, sec, nanosec as u32).unwrap().fixed_offset();
         Ok(dt)
     }
 }
